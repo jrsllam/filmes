@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 لعبة الأفلام المصرية</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+        <div class="container">
+            <div class="welcome-content">
+                <div class="game-icon">🎬</div>
+                <h1 class="game-title">لعبة الأفلام المصرية</h1>
+                <p class="game-description">لعبة جماعية ممتعة تعتمد على التمثيل والتخمين بين لاعبين</p>
+                
+                <div class="game-rules">
+                    <h3>📌 طريقة اللعب:</h3>
+                    <ul>
+                        <li>يمثل اللاعب الفيلم بدون نطق اسمه</li>
+                        <li>اللاعب الآخر يحاول تخمين اسم الفيلم</li>
+                        <li>التناوب بين اللاعبين حتى انتهاء الجولات</li>
+                        <li>الهدف: الوصول لأعلى نتيجة</li>
+                    </ul>
+                </div>
+                
+                <button id="start-setup" class="btn btn--primary btn--lg btn--full-width">
+                    ابدأ اللعبة 🎯
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings-screen" class="screen">
+        <div class="container">
+            <div class="settings-content">
+                <h2 class="settings-title">إعدادات اللعبة</h2>
+                
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label class="form-label">🕐 مدة كل جولة</label>
+                        <div class="slider-container">
+                            <input type="range" id="duration-slider" class="slider" min="1" max="5" value="2">
+                            <div class="slider-display">
+                                <span id="duration-display">2</span> دقيقة
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">🎯 عدد الجولات</label>
+                        <div class="slider-container">
+                            <input type="range" id="rounds-slider" class="slider" min="5" max="10" value="7">
+                            <div class="slider-display">
+                                <span id="rounds-display">7</span> جولات
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="player1-name" class="form-label">👤 اسم اللاعب الأول</label>
+                        <input type="text" id="player1-name" class="form-control" placeholder="أدخل اسم اللاعب الأول" value="اللاعب الأول">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="player2-name" class="form-label">👤 اسم اللاعب الثاني</label>
+                        <input type="text" id="player2-name" class="form-control" placeholder="أدخل اسم اللاعب الثاني" value="اللاعب الثاني">
+                    </div>
+                    
+                    <button id="start-game" class="btn btn--primary btn--lg btn--full-width">
+                        ابدأ الجولة الأولى 🚀
+                    </button>
+                    
+                    <button id="back-to-welcome" class="btn btn--outline btn--lg btn--full-width">
+                        العودة للخلف
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div class="container">
+            <!-- Game Header -->
+            <div class="game-header">
+                <div class="current-player">
+                    <span class="player-label">دور:</span>
+                    <span id="current-player-name" class="player-name">اللاعب الأول</span>
+                </div>
+                <div class="round-info">
+                    <span id="round-display">الجولة 1 من 7</span>
+                </div>
+            </div>
+            
+            <!-- Scores -->
+            <div class="scores-container">
+                <div class="score-card">
+                    <div class="score-player" id="player1-display">اللاعب الأول</div>
+                    <div class="score-value" id="player1-score">0</div>
+                </div>
+                <div class="score-vs">VS</div>
+                <div class="score-card">
+                    <div class="score-player" id="player2-display">اللاعب الثاني</div>
+                    <div class="score-value" id="player2-score">0</div>
+                </div>
+            </div>
+            
+            <!-- Timer -->
+            <div class="timer-container">
+                <div class="timer-circle">
+                    <div class="timer-value" id="timer-display">2:00</div>
+                    <div class="timer-label">الوقت المتبقي</div>
+                </div>
+            </div>
+            
+            <!-- Movie Display -->
+            <div class="movie-container">
+                <div class="movie-reveal-section">
+                    <button id="show-movie-btn" class="btn btn--secondary btn--lg btn--full-width show-movie-btn">
+                        عرض الفيلم 🎭
+                    </button>
+                    <h2 class="movie-title hidden" id="current-movie"></h2>
+                </div>
+            </div>
+            
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button id="start-timer-btn" class="btn btn--primary btn--lg btn--full-width timer-btn">
+                    ابدأ الوقت ⏰
+                </button>
+                
+                <div class="action-buttons hidden" id="action-buttons">
+                    <div class="main-actions">
+                        <button id="correct-btn" class="btn btn--success btn--lg action-btn">
+                            إجابة صحيحة ✓
+                        </button>
+                        <button id="wrong-btn" class="btn btn--error btn--lg action-btn">
+                            إجابة خاطئة ✗
+                        </button>
+                    </div>
+                    <button id="new-movie-btn" class="btn btn--outline btn--lg btn--full-width new-movie-btn">
+                        فيلم جديد 🔄
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen">
+        <div class="container">
+            <div class="results-content">
+                <div class="results-icon">🏆</div>
+                <h2 class="results-title">النتيجة النهائية</h2>
+                
+                <div class="final-scores">
+                    <div class="final-score-card winner" id="winner-card">
+                        <div class="winner-crown">👑</div>
+                        <div class="winner-name" id="winner-name">اللاعب الأول</div>
+                        <div class="winner-score" id="winner-score">5</div>
+                        <div class="winner-label" id="winner-label">الفائز!</div>
+                    </div>
+                    
+                    <div class="final-score-card" id="loser-card">
+                        <div class="player-name" id="loser-name">اللاعب الثاني</div>
+                        <div class="player-score" id="loser-score">3</div>
+                    </div>
+                </div>
+                
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">إجمالي الأفلام:</span>
+                        <span id="total-movies">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">معدل النجاح:</span>
+                        <span id="success-rate">0%</span>
+                    </div>
+                </div>
+                
+                <div class="results-actions">
+                    <button id="new-game" class="btn btn--primary btn--lg btn--full-width">
+                        لعبة جديدة 🎮
+                    </button>
+                    <button id="back-home" class="btn btn--outline btn--lg btn--full-width">
+                        العودة للرئيسية
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
