@@ -85,7 +85,9 @@ function shuffle(array) {
 }
 
 function formatTime(seconds) {
-  const m = Math.floor(seconds / 60).toString().padStart(1, "0");
+  const m = Math.floor(seconds / 60)
+    .toString()
+    .padStart(1, "0");
   const s = (seconds % 60).toString().padStart(2, "0");
   return `${m}:${s}`;
 }
@@ -120,6 +122,7 @@ function startTimer() {
     }
   }, 1000);
 
+  // Enable action buttons
   actionButtonsWrapper.classList.remove("hidden");
   startTimerBtn.disabled = true;
   correctBtn.disabled = false;
@@ -128,6 +131,7 @@ function startTimer() {
 }
 
 function pickNewMovie() {
+  // If all movies used, reset
   if (state.usedMovies.size === state.movies.length) {
     state.usedMovies.clear();
   }
@@ -144,13 +148,16 @@ function pickNewMovie() {
 }
 
 function prepareTurn() {
+  // Update header info
   currentPlayerNameEl.textContent = state.players[state.currentPlayerIndex].name;
   roundDisplayEl.textContent = `الجولة ${state.currentRound} من ${state.totalRounds}`;
 
+  // Hide movie & buttons
   movieTitleEl.classList.add("hidden");
   showMovieBtn.disabled = false;
   showMovieBtn.classList.remove("loading");
 
+  // Reset timer UI
   stopTimer();
   state.timer.remaining = state.roundTimeMinutes * 60;
   updateTimerDisplay();
@@ -161,6 +168,7 @@ function prepareTurn() {
   wrongBtn.disabled = true;
   newMovieBtn.disabled = true;
 
+  // Pick a new movie in advance (but hidden)
   pickNewMovie();
 }
 
@@ -169,16 +177,22 @@ function switchPlayer() {
 }
 
 function endTurn(addPoint) {
+  // Update score if needed
   if (addPoint) {
     state.players[state.currentPlayerIndex].score++;
   }
   updateScoresDisplay();
 
-  if (state.currentRound >= state.totalRounds) {
+  // Check end conditions
+  if (
+    state.players.some((p) => p.score >= 5) ||
+    state.currentRound >= state.totalRounds
+  ) {
     showResultsScreen();
     return;
   }
 
+  // Next round & player
   state.currentRound++;
   switchPlayer();
   prepareTurn();
@@ -205,6 +219,7 @@ function handleTimeUp() {
 }
 
 function showResultsScreen() {
+  // Determine winner / draw
   const [p1, p2] = state.players;
   let winner = null;
   if (p1.score > p2.score) winner = p1;
@@ -216,8 +231,8 @@ function showResultsScreen() {
     const loser = winner === p1 ? p2 : p1;
     loserNameEl.textContent = loser.name;
     loserScoreEl.textContent = loser.score;
-    document.getElementById("winner-label").textContent = "الفائز!";
   } else {
+    // Draw
     winnerNameEl.textContent = "تعادل";
     winnerScoreEl.textContent = `${p1.score} - ${p2.score}`;
     document.getElementById("winner-label").textContent = "";
@@ -226,7 +241,7 @@ function showResultsScreen() {
   }
 
   totalMoviesEl.textContent = state.usedMovies.size;
-  const totalCorrect = p1.score + p2.score;
+  const totalCorrect = state.players[0].score + state.players[1].score;
   const successRate = totalCorrect === 0 ? 0 : ((totalCorrect / state.usedMovies.size) * 100).toFixed(1);
   successRateEl.textContent = `${successRate}%`;
 
@@ -234,6 +249,7 @@ function showResultsScreen() {
 }
 
 function resetGame() {
+  // Reset state to defaults (except loaded movies)
   state.players[0].score = 0;
   state.players[1].score = 0;
   state.currentPlayerIndex = 0;
@@ -242,11 +258,13 @@ function resetGame() {
 }
 
 function startGame() {
+  // Read settings
   state.roundTimeMinutes = parseInt(durationSlider.value, 10);
   state.totalRounds = parseInt(roundsSlider.value, 10);
   state.players[0].name = player1Input.value.trim() || "اللاعب الأول";
   state.players[1].name = player2Input.value.trim() || "اللاعب الثاني";
 
+  // Update score labels
   player1DisplayEl.textContent = state.players[0].name;
   player2DisplayEl.textContent = state.players[1].name;
   currentPlayerNameEl.textContent = state.players[0].name;
@@ -257,21 +275,45 @@ function startGame() {
 }
 
 // == Event Listeners ==
-startSetupBtn.addEventListener("click", () => showScreen("settings"));
-backToWelcomeBtn.addEventListener("click", () => showScreen("welcome"));
+startSetupBtn.addEventListener("click", () => {
+  showScreen("settings");
+});
+
+backToWelcomeBtn.addEventListener("click", () => {
+  showScreen("welcome");
+});
+
 startGameBtn.addEventListener("click", startGame);
-durationSlider.addEventListener("input", () => durationDisplay.textContent = durationSlider.value);
-roundsSlider.addEventListener("input", () => roundsDisplay.textContent = roundsSlider.value);
+
+durationSlider.addEventListener("input", () => {
+  durationDisplay.textContent = durationSlider.value;
+});
+
+roundsSlider.addEventListener("input", () => {
+  roundsDisplay.textContent = roundsSlider.value;
+});
+
 showMovieBtn.addEventListener("click", () => {
   movieTitleEl.classList.remove("hidden");
   showMovieBtn.disabled = true;
 });
+
 startTimerBtn.addEventListener("click", startTimer);
+
 correctBtn.addEventListener("click", handleCorrect);
 wrongBtn.addEventListener("click", handleWrong);
-newMovieBtn.addEventListener("click", pickNewMovie);
-newGameBtn.addEventListener("click", () => showScreen("settings"));
-backHomeBtn.addEventListener("click", () => showScreen("welcome"));
+
+newMovieBtn.addEventListener("click", () => {
+  pickNewMovie();
+});
+
+newGameBtn.addEventListener("click", () => {
+  showScreen("settings");
+});
+
+backHomeBtn.addEventListener("click", () => {
+  showScreen("welcome");
+});
 
 // == Initialization ==
 async function init() {
@@ -281,6 +323,7 @@ async function init() {
     state.movies = shuffle(data.movies);
   } catch (err) {
     console.error("Failed to load movies", err);
+    // fallback minimal list
     state.movies = ["العزيمة", "الأرض", "المومياء"];
   }
 }
